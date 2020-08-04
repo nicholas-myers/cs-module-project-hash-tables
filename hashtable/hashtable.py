@@ -107,7 +107,12 @@ class HashTable:
         """
         # Your code here
         index = self.hash_index(key)
-        self.hash_list[index] = None
+        if self.hash_list[index] == None:
+            print("No key found")
+        if self.hash_list[index].key == key:
+            self.hash_list[index].value = None
+        else:
+            self.hash_list[index].next.value = None
                 
     def get(self, key):
         """
@@ -119,7 +124,6 @@ class HashTable:
         """
         # Your code here
         index = self.hash_index(key)
-        # print(index)
         # print(self.bucket_array[index].value)
         if self.hash_list[index].key == key:
             return self.hash_list[index].value
