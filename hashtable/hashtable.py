@@ -21,7 +21,7 @@ class HashTable:
     def __init__(self, capacity):
         # Your code here
         self.capacity = capacity
-        self.bucket_array = [None for i in range(capacity)]
+        self.hash_list = [None for i in range(self.capacity)]
         
     def get_num_slots(self):
         """
@@ -34,7 +34,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        return len(self.bucket_array)
+        return len(self.hash_list)
     
     def get_load_factor(self):
         """
@@ -65,9 +65,9 @@ class HashTable:
         byte_array = key.encode("utf-8")
 
         for byte in byte_array:
-            # the modulus keeps it 32-bit, python ints don't overflow
-            hash = ((hash * 33) ^ byte) % 0x100000000
-
+        # the modulus keeps it 32-bit, python ints don't overflow
+            hash = ((hash * 33) ^ byte) % 0xFFFFFFFF
+        # print(hash)
         return hash
 
     def hash_index(self, key):
@@ -76,7 +76,7 @@ class HashTable:
         between within the storage capacity of the hash table.
         """
         # return self.fnv1(key) % self.capacity
-        return self.djb2(key) % self.capacity
+        return self.djb2(key) % self.get_num_slots()
 
     def put(self, key, value):
         """
@@ -85,27 +85,18 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        key_hash = self.djb2(key)
         index = self.hash_index(key)
-
         new_node = HashTableEntry(key, value)
-        existing_node = self.bucket_array[index]
-
-        if existing_node:
-            last_node = None
-            while existing_node:
-                if existing_node.key == key:
-                    # found existing key, replace value
-                    existing_node.value = value
-                    return
-                last_node = existing_node
-                existing_node = existing_node.next
-            # if we get this far, we didn't find an existing key
-            # so just append the new node to the end of the bucket
-            last_node.next_node = new_node
+        # print(index)
+        new_node = HashTableEntry(key, value)
+        if self.hash_list[index] is None:
+            self.hash_list[index] = new_node
         else:
-            self.bucket_array[index] = new_node
-
+            if self.hash_list[index].key == key:
+                self.hash_list[index].value = value
+            self.hash_list[index].next = new_node
+        # print(self.hash_list)
+        
     def delete(self, key):
         """
         Remove the value stored with the given key.
@@ -115,20 +106,8 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        key_hash = self.djb(key)
-        bucket_index = key_hash % self.capacity
-
-        existing_node = self.bucket_array[bucket_index]
-        if existing_node:
-            last_node = None
-            while existing_node:
-                if existing_node.key == key:
-                    if last_node:
-                        last_node.next = existing_node.next
-                    else:
-                        self.bucket_array[bucket_index] = existing_node.next_node
-                last_node = existing_node
-                existing_node = existing_node.next
+        index = self.hash_index(key)
+        self.hash_list[index] = None
                 
     def get(self, key):
         """
@@ -139,18 +118,14 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        key_hash = djb2(key)
-        bucket_index = key_hash % self.capacity
-
-        existing_node = self.bucket_array[bucket_index]
-        if existing_node:
-            while existing_node:
-                if existing_node.key == key:
-                    return existing_node.value
-                existing_node = existing_node.next
-
-        return None
-
+        index = self.hash_index(key)
+        # print(index)
+        # print(self.bucket_array[index].value)
+        if self.hash_list[index].key == key:
+            return self.hash_list[index].value
+        else:
+            return self.hash_list[index].next.value
+        
     def resize(self, new_capacity):
         """
         Changes the capacity of the hash table and
@@ -161,17 +136,7 @@ class HashTable:
         # Your code here
         # get a list of all items in the hash table
         # print(self.bucket_array)
-        items = self.bucket_array
-        print(items)
-        
-        # reset size for hash table
-        self.size = new_capacity
-        
-        self.bucket_array = [None for i in range(new_capacity)]
-        
-        # rehash each item
-        for h in items:
-            self.put(h.key, h.value)
+        pass
         
 if __name__ == "__main__":
     ht = HashTable(8)
@@ -188,6 +153,7 @@ if __name__ == "__main__":
     ht.put("line_10", "Long time the manxome foe he sought--")
     ht.put("line_11", "So rested he by the Tumtum tree")
     ht.put("line_12", "And stood awhile in thought.")
+    
 
     print("")
 
