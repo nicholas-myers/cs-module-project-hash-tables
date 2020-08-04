@@ -107,7 +107,7 @@ class HashTable:
         """
         # Your code here
         index = self.hash_index(key)
-        if self.hash_list[index] == None:
+        if self.hash_list[index].value == None:
             print("No key found")
         if self.hash_list[index].key == key:
             self.hash_list[index].value = None
@@ -130,6 +130,16 @@ class HashTable:
         else:
             return self.hash_list[index].next.value
         
+    def resize_delete(self, key, new_list):
+        index = self.hash_index(key)
+        if self.hash_list[index].next:
+            new_list.append(self.hash_list[index])
+            self.hash_list[index] = self.hash_list[index].next
+            self.resize_delete(self.hash_list[index].key, new_list)
+        else:
+            new_list.append(self.hash_list[index])
+            self.hash_list[index] = None
+    
     def resize(self, new_capacity):
         """
         Changes the capacity of the hash table and
@@ -138,9 +148,16 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        # get a list of all items in the hash table
-        # print(self.bucket_array)
-        pass
+        # extract everything from the hashlist and put into a new list
+        new_hash_list = []
+        for entry in self.hash_list:
+            self.resize_delete(entry.key, new_hash_list)
+        self.capacity = new_capacity
+        self.hash_list = [None for i in range(new_capacity)]
+        for i in new_hash_list:
+            self.put(i.key, i.value)
+        # reset the size and hash list
+        # itereate through the new list and use our put function on every key value pair
         
 if __name__ == "__main__":
     ht = HashTable(8)
