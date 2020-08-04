@@ -43,7 +43,22 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        pass
+        # count the total number of nodes
+        # if the current load is greater than 0.7
+        # resize * 2
+        count = 0
+        for entry in self.hash_list:
+            cur_entry = entry
+            if entry.next is None:
+                count+=1
+            while cur_entry.next:
+                count+=1
+                cur_entry = entry.next
+        if count / self.capacity > 0.7:
+            self.resize(self.capacity * 2)
+                
+                
+                    
     
     def fnv1(self, key):
         """
