@@ -9,4 +9,23 @@ def read_file(path):
     text = f.read()
     f.close()
     return text
-print(read_file(cipher))
+
+
+letter_count = {}
+text = read_file(cipher)
+total = 0
+for l in text:
+    if l.isalpha():
+        total += 1
+        if l not in letter_count:
+            letter_count[l] = 1
+        else:
+            letter_count[l] += 1
+        
+# print(letter_count)
+# print(total)
+decoder = {}
+for l in letter_count:
+    percentage = round((letter_count[l] / total) * 100, 2)
+    
+    print(percentage)

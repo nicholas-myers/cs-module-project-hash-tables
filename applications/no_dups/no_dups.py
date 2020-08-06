@@ -3,8 +3,8 @@ def no_dups(s):
     word_count = {}
     
     words = s.split()
-    if len(words) == 1:
-        return s
+    # if len(words) == 1:
+    #     return s
     for index, w in enumerate(words):
         if w not in word_count:
             word_count[w] = 1
