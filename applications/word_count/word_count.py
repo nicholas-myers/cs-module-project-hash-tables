@@ -1,7 +1,6 @@
 def word_count(s):
     # Your code here
     word_count = {}
-    
     if s == "":
         return word_count
     if s == '":;,.-+=/\|[]{}()*^&':
